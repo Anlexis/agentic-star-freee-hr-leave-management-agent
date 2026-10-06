@@ -1,0 +1,10 @@
+# Runtime parameters — loaded by AgentRegistry, passed as Graph(config=...).
+# Separate from config/agent.yaml (the static manifest).
+
+max_retry: 3
+timeout_s: 30
+
+# carried from the legacy manifest root by migrate_manifest.py
+freee_hr:
+  base_url: "https://api.freee.co.jp/hr/api/v1"
+  company_id: ""

@@ -1,0 +1,35 @@
+# Agent Manifest — AgentRegistry entry point
+# AgentRegistry (mediator/registry/agent_registry.py) reads every key below at
+# ROOT level — do NOT nest keys under an `agent:` block.
+id: "CMN-C2-278"
+name: "FreeeHRLeaveAgent"
+namespace: "cmn"
+version: "0.1.0"
+enabled: true
+category: "Cat 2"
+generation_mode: "llm"  # deterministic | llm
+industry: "CMN"
+
+base_type: "ToolCallingAgent"
+
+# Entry point — single dotted import path (module.Class), NOT split module:/class:.
+class: "src.graph.graph.FreeeHRLeaveAgent"
+
+required_trust_level: "VERIFIED_EXTERNAL"
+
+# Compile-time gates — declare every ctx.secrets.require() key + constructed extra.
+# ClassifyIntentNode enhances the deterministic keyword heuristic with an
+# AzureOpenAIClient call (graceful degrade to the heuristic on any failure —
+# see docs/02_design.md "Intent classification"). AZURE_OPENAI_API_KEY /
+# AZURE_OPENAI_ENDPOINT / AZURE_OPENAI_DEPLOYMENT are deliberately NOT listed
+# under requires.secrets, same precedent as FREEE_HR_ACCESS_TOKEN below:
+# requires is a COMPILE-TIME contract enforced via require_at_compile(), and
+# every key listed there must be provisioned or the agent fails to start
+# (503). Declaring an optional, gracefully-degrading key here would make the
+# default (no-LLM-key) configuration unstartable, which defeats the point of
+# the fallback. The "openai" extra IS a real install-time dependency
+# (AzureOpenAIClient imports langchain_openai unconditionally when
+# constructed), so it stays declared.
+requires:
+  secrets: []
+  extras: ["openai"]
